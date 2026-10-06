@@ -33,7 +33,10 @@ Una vez para de girar vuelve a ir hacia delante y se repite el proceso.
 Adicionalmente, he añadido un timeout de 50 ticks en el retroceso, para que si choca al retroceder, y la distancia con el objeto con el que se había chocado inicialmente no ha superado 0.3, pase a giro desde ahí y evite quedarse retrocediento sin parar.
 
 Este es un vídeo demostrativo del funcionamiento de la práctica:  
-//video
+![Video_demostracion](Demostracio_practica_1_2.mp4)
+
+Y este es la versión acelerada que enseña 20 minutos del funcionamiento:
+![Video_demostracion_acelerado](Demostracio_practica_1.mp4)
 
 Como se ve, cubre más de el 80% de la casa. Si no se detuviera debería poder cubrir el 100, pero al ser pseudoaleatorio es muy difícil que lo haga sin tardar una eternidad.
 

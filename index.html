@@ -1,8 +1,298 @@
-<h1 style="text-align: center; font-size: 50px;">ROBÓTICA MÓVIL URJC</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robótica Móvil URJC · Marcos García Vila</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --bg-soft: #111827;
+            --card: #151b2e;
+            --accent: #00e0b8;
+            --accent-2: #7c5cff;
+            --text: #e6edf7;
+            --muted: #94a3b8;
+            --border: rgba(124, 92, 255, 0.18);
+        }
 
-<h1 style="text-align: center;"> Blog de prácticas de Robótica movil de Marcos García Vila, alumno de Ingeniería Robótica Software URJC:</p>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<ul>
-    <!-- Enlace relativo a la carpeta de tu práctica -->
-    <li><a href="./Practica_1/">Ir a la Práctica 1</a></li>
-</ul>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.25rem;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        /* Fondo con degradados suaves */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(124, 92, 255, 0.18), transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(0, 224, 184, 0.14), transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02), transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Cuadrícula sutil de fondo */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 780px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(0, 224, 184, 0.08);
+            border: 1px solid rgba(0, 224, 184, 0.25);
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.2rem, 6vw, 3.6rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.25rem;
+            background: linear-gradient(135deg, #ffffff 20%, var(--accent) 60%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 620px;
+            margin-bottom: 2.5rem;
+        }
+
+        .subtitle strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Tarjeta de prácticas */
+        .practices {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .practice-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.35rem 1.5rem;
+            background: linear-gradient(135deg, var(--card), var(--bg-soft));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .practice-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 30%, rgba(0, 224, 184, 0.08) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .practice-card:hover {
+            border-color: rgba(0, 224, 184, 0.5);
+            transform: translateY(-3px);
+            box-shadow:
+                0 10px 30px -10px rgba(0, 224, 184, 0.25),
+                0 0 0 1px rgba(0, 224, 184, 0.1);
+        }
+
+        .practice-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .practice-info {
+            display: flex;
+            align-items: center;
+            gap: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .practice-num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(124, 92, 255, 0.25), rgba(0, 224, 184, 0.2));
+            border: 1px solid var(--border);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .practice-text h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .practice-text p {
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .arrow {
+            color: var(--muted);
+            font-size: 1.3rem;
+            transition: transform 0.3s ease, color 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .practice-card:hover .arrow {
+            transform: translateX(6px);
+            color: var(--accent);
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        footer a:hover {
+            border-bottom-color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <span class="badge">
+            <span class="dot"></span>
+            URJC · Ingeniería Robótica Software
+        </span>
+
+        <h1>Robótica Móvil</h1>
+
+        <p class="subtitle">
+            Blog de prácticas de <strong>Marcos García Vila</strong>, alumno de Ingeniería Robótica Software en la Universidad Rey Juan Carlos.
+        </p>
+
+        <div class="practices">
+            <a class="practice-card" href="./Practica_1/">
+                <div class="practice-info">
+                    <div class="practice-num">01</div>
+                    <div class="practice-text">
+                        <h3>Práctica 1</h3>
+                        <p>Introducción y primeros pasos</p>
+                    </div>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+
+            <!-- Descomenta cuando tengas más prácticas:
+            <a class="practice-card" href="./Practica_2/">
+                <div class="practice-info">
+                    <div class="practice-num">02</div>
+                    <div class="practice-text">
+                        <h3>Práctica 2</h3>
+                        <p>Descripción breve</p>
+                    </div>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+            -->
+        </div>
+    </main>
+
+    <footer>
+        © <span id="year"></span> Marcos García Vila · Hecho con ❤️ en URJC
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

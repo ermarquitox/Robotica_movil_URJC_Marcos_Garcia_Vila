@@ -35,9 +35,6 @@ Adicionalmente, he añadido un timeout de 50 ticks en el retroceso, para que si 
 Este es un vídeo demostrativo del funcionamiento de la práctica:  
 
 
-https://github.com/user-attachments/assets/db7cf34c-e221-495c-b86f-e194bd6ba666
-
-
 Si no se detuviera debería poder cubrir el 100, pero al ser pseudoaleatorio es muy difícil que lo haga sin tardar una eternidad.
 
 ## Conclusión:

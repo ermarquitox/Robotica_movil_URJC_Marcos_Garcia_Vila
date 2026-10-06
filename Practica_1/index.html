@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica 1 · Basic Vacuum Cleaner · Robótica Móvil URJC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --bg-soft: #111827;
+            --card: #151b2e;
+            --accent: #00e0b8;
+            --accent-2: #7c5cff;
+            --text: #e6edf7;
+            --muted: #94a3b8;
+            --border: rgba(124, 92, 255, 0.18);
+            --border-soft: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 2rem 1.25rem 4rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(124, 92, 255, 0.15), transparent 45%),
+                radial-gradient(circle at 85% 90%, rgba(0, 224, 184, 0.12), transparent 45%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
+            -webkit-mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        /* Back link */
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+
+        .back:hover {
+            color: var(--accent);
+            border-color: var(--border);
+            background: rgba(0, 224, 184, 0.05);
+            transform: translateX(-3px);
+        }
+
+        .back span { font-size: 1.1rem; }
+
+        /* Header */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(0, 224, 184, 0.08);
+            border: 1px solid rgba(0, 224, 184, 0.25);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 5.5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 20%, var(--accent) 60%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .lead {
+            color: var(--muted);
+            font-size: 1.05rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 3rem;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        section:nth-child(2) { animation-delay: 0.05s; }
+        section:nth-child(3) { animation-delay: 0.1s; }
+        section:nth-child(4) { animation-delay: 0.15s; }
+        section:nth-child(5) { animation-delay: 0.2s; }
+        section:nth-child(6) { animation-delay: 0.25s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            margin-bottom: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        h2::before {
+            content: "";
+            width: 4px;
+            height: 1.4rem;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 12px rgba(0, 224, 184, 0.5);
+        }
+
+        p {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        p strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Card container */
+        .card {
+            background: linear-gradient(135deg, var(--card), var(--bg-soft));
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 1.75rem 1.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* States list */
+        .states {
+            display: grid;
+            gap: 0.85rem;
+            margin: 1.25rem 0;
+        }
+
+        .state {
+            display: flex;
+            gap: 1rem;
+            padding: 1.1rem 1.25rem;
+            background: linear-gradient(135deg, var(--card), var(--bg-soft));
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .state::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .state:hover {
+            border-color: rgba(0, 224, 184, 0.35);
+            transform: translateX(4px);
+        }
+
+        .state:hover::before { opacity: 1; }
+
+        .state-icon {
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(124, 92, 255, 0.2), rgba(0, 224, 184, 0.15));
+            border: 1px solid var(--border);
+            font-size: 1.2rem;
+        }
+
+        .state-body h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.02em;
+        }
+
+        .state-body p {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin: 0;
+        }
+
+        /* Code-like inline */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            padding: 0.15em 0.45em;
+            border-radius: 6px;
+            background: rgba(124, 92, 255, 0.12);
+            border: 1px solid rgba(124, 92, 255, 0.2);
+            color: #c4b5fd;
+        }
+
+        /* Math inline */
+        .math {
+            font-style: italic;
+            color: var(--accent);
+            font-family: 'Space Grotesk', serif;
+        }
+
+        /* Videos grid */
+        .videos-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .video-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.65rem;
+            padding-left: 0.15rem;
+        }
+
+        .video-label::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .video-wrap {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #000;
+            box-shadow: 0 20px 40px -20px rgba(0, 224, 184, 0.25);
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .video-wrap:hover {
+            border-color: rgba(0, 224, 184, 0.4);
+            box-shadow: 0 24px 48px -20px rgba(0, 224, 184, 0.4);
+        }
+
+        .video-wrap::before {
+            content: "";
+            display: block;
+            padding-top: 56.25%; /* 16:9 */
+        }
+
+        .video-wrap video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: #000;
+        }
+
+        .video-caption {
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 0.9rem;
+            font-style: italic;
+        }
+
+        /* Conclusion highlight */
+        .highlight {
+            padding: 1.5rem 1.75rem;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(0, 224, 184, 0.06));
+            border-left: 3px solid var(--accent);
+        }
+
+        .highlight p:last-child { margin-bottom: 0; }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-soft);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        footer .author {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        footer .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-2), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0a0e1a;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        footer a:hover { border-bottom-color: var(--accent); }
+
+        @media (max-width: 560px) {
+            .card { padding: 1.4rem 1.25rem; }
+            .state { padding: 0.95rem 1rem; }
+            .state-icon { width: 36px; height: 36px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back" href="../">
+            <span>←</span> Volver al inicio
+        </a>
+
+        <span class="badge">
+            <span class="dot"></span>
+            Práctica 01 · Robótica Móvil
+        </span>
+
+        <h1>Basic Vacuum Cleaner</h1>
+        <p class="lead">
+            Programación de una aspiradora de gama baja capaz de limpiar una casa mediante navegación pseudoaleatoria.
+        </p>
+
+        <!-- OBJETIVOS -->
+        <section>
+            <h2>Objetivos de la práctica</h2>
+            <div class="card">
+                <p>
+                    En esta práctica se nos pide programar una aspiradora de gama baja para que limpie una casa
+                    moviéndose <strong>pseudoaleatoriamente</strong> por ella. Se programará un autómata con al menos
+                    3 estados (<em>avanzando, retrocediendo, girando</em>). Se puede incluir un estado haciendo-espiral,
+                    que aumenta la eficiencia del barrido.
+                </p>
+                <p>
+                    Con él se logra una navegación pseudoaleatoria que estocásticamente cubre toda la casa, limpiándola.
+                    La aspiradora, al ser de gama baja, no incorpora algoritmos robustos y precisos de autolocalización.
+                    La posición estimada por la odometría no se puede usar como posición verdadera, pues acumula ruido.
+                    Sí se puede utilizar la <strong>orientación</strong> para medir giros de modo aproximado.
+                </p>
+                <p style="margin-bottom: 0;">
+                    El autómata se implementará como un bucle infinito. No se admiten <code>sleeps</code> que rompan la
+                    reactividad del bucle principal.
+                </p>
+            </div>
+        </section>
+
+        <!-- DESARROLLO -->
+        <section>
+            <h2>Desarrollo</h2>
+            <p>
+                Para empezar la práctica instalamos <strong>Docker</strong> y el entorno necesario de <strong>Unibotics</strong>.
+                Una vez hecho esto podemos empezar a programar.
+            </p>
+
+            <p>
+                Primero, traté de hacer un algoritmo sencillo. Mi idea era aprovechar las formas rectangulares y cuadradas
+                de todos los objetos de la casa, haciendo que la aspiradora solo avanzase en línea recta siguiendo las
+                direcciones N, S, E y W. Ya que <code>HAL.getPose3d().yaw</code> devuelve la orientación en radianes del
+                robot, podemos girar hasta que llegue a la posición que queremos aproximadamente y vuelva a avanzar.
+                Por tanto mi primera idea fue que siguiera una secuencia <em>E → N → W → S → E</em>.
+            </p>
+
+            <p>Pero esta idea tenía dos problemas:</p>
+
+            <div class="card">
+                <p style="margin-bottom: 0.5rem;">
+                    <strong>1.</strong> No es pseudoaleatorio, por tanto no nos sirve.
+                </p>
+                <p style="margin-bottom: 0;">
+                    <strong>2.</strong> Si entra en una habitación cuadrada, se quedaría dando vueltas de esquina a esquina.
+                </p>
+            </div>
+
+            <p>
+                Por tanto, había que hacer algo menos sofisticado y más aleatorio, como se pide en el enunciado.
+                Para ello definí 3 estados para la variable global <code>CURRENT_STATE</code>:
+            </p>
+
+            <div class="states">
+                <div class="state">
+                    <div class="state-icon">➡️</div>
+                    <div class="state-body">
+                        <h4>MOVING_FORWARD</h4>
+                        <p>El robot avanza en línea recta hasta chocar con algo.</p>
+                    </div>
+                </div>
+                <div class="state">
+                    <div class="state-icon">⬅️</div>
+                    <div class="state-body">
+                        <h4>MOVING_BACKWARDS</h4>
+                        <p>El robot retrocede tras chocar.</p>
+                    </div>
+                </div>
+                <div class="state">
+                    <div class="state-icon">🔄</div>
+                    <div class="state-body">
+                        <h4>TURNING</h4>
+                        <p>El robot gira un ángulo aleatorio antes de reanudar la marcha.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p>El funcionamiento es el siguiente:</p>
+
+            <div class="card">
+                <p>
+                    El robot comienza avanzando en línea recta. Si choca con algo cambia al estado de retroceso.
+                    Detecta el choque si el láser detecta un objeto a menos de <strong>0.2</strong> de distancia.
+                    En la explicación de la práctica de Unibotics comenta que para detectar un choque frontal se use
+                    el valor <code>[90]</code> del láser, pero para evitar también que el robot se choque con los
+                    laterales busco el <strong>valor mínimo</strong> en <code>laser.Values</code>.
+                </p>
+                <p>
+                    Si detecta un choque, cambia de estado y retrocede hasta que el objeto esté a <strong>0.3</strong>
+                    de distancia, y entonces pasa al estado de girar. El giro detecta la orientación actual del robot
+                    y le suma un valor aleatorio entre <span class="math">π</span> y <span class="math">−π</span>.
+                    Como la orientación se mide en radianes y <span class="math">π</span> es igual que
+                    <span class="math">k·π</span> en muchos casos, el robot se queda girando más de una vuelta para
+                    llegar a la misma orientación que podría con media. Por tanto <strong>normalizo</strong> la posición
+                    para que recorra el camino más corto posible. Si es positivo, gira hacia la derecha; si es negativo,
+                    hacia la izquierda. A cada <code>tick()</code> comprueba la orientación actual y la contrasta con la
+                    del objetivo. Si la diferencia entre ambas es lo suficientemente pequeña, para de girar.
+                </p>
+                <p style="margin-bottom: 0;">
+                    Una vez para de girar vuelve a ir hacia delante y se repite el proceso.
+                </p>
+            </div>
+
+            <p>
+                Adicionalmente, he añadido un <strong>timeout de 50 ticks</strong> en el retroceso, para que si choca al
+                retroceder, y la distancia con el objeto con el que se había chocado inicialmente no ha superado 0.3,
+                pase a giro desde ahí y evite quedarse retrocediendo sin parar.
+            </p>
+        </section>
+
+        <!-- VÍDEOS -->
+        <section>
+            <h2>Vídeos demostrativos</h2>
+
+            <div class="videos-grid">
+                <div class="video-item">
+                    <span class="video-label">Ejecución · 1</span>
+                    <div class="video-wrap">
+                        <video controls preload="metadata" playsinline>
+                            <source src="Demostracio_practica_1.mp4" type="video/mp4">
+                            Tu navegador no soporta la etiqueta de vídeo.
+                            <a href="Demostracio_practica_1.mp4">Descargar vídeo</a>.
+                        </video>
+                    </div>
+                </div>
+
+                <div class="video-item">
+                    <span class="video-label">Ejecución · 2</span>
+                    <div class="video-wrap">
+                        <video controls preload="metadata" playsinline>
+                            <source src="Demostracio_practica_1_2.mp4" type="video/mp4">
+                            Tu navegador no soporta la etiqueta de vídeo.
+                            <a href="Demostracio_practica_1_2.mp4">Descargar vídeo</a>.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <p class="video-caption">
+                Demostración del funcionamiento de la aspiradora pseudoaleatoria cubriendo más del 80% de la casa.
+            </p>
+
+            <p style="margin-top: 1.5rem;">
+                Como se ve, cubre más del <strong>80%</strong> de la casa. Si no se detuviera debería poder cubrir el
+                <strong>100%</strong>, pero al ser pseudoaleatorio es muy difícil que lo haga sin tardar una eternidad.
+            </p>
+        </section>
+
+        <!-- CONCLUSIÓN -->
+        <section>
+            <h2>Conclusión</h2>
+            <div class="highlight">
+                <p>
+                    Tras terminar la práctica he concluido que es un algoritmo demasiado simple para una aspiradora,
+                    ya que su aleatoriedad podría causar que se quede en una sola habitación durante horas. Lo ideal
+                    sería algo más sofisticado, pero sí que me ha servido para entender mejor <strong>Python</strong>
+                    y cómo hacer diferentes <strong>estados</strong>.
+                </p>
+                <p>
+                    Además he visto la importancia de <strong>no dejar un estado completamente aislado</strong> hasta
+                    que se cumpla y tener en cuenta variaciones para evitar que el robot se quede pillado.
+                </p>
+            </div>
+        </section>
+
+        <!-- ENTREGA -->
+        <section>
+            <h2>Entrega</h2>
+            <p>
+                Adjunto el archivo Python en el aula virtual.
+            </p>
+        </section>
+
+        <footer>
+            <div class="author">
+                <div class="avatar">MG</div>
+                <div>
+                    <div style="color: var(--text); font-weight: 600;">Marcos García Vila</div>
+                    <div style="font-size: 0.8rem;">3º Ingeniería Robótica Software · URJC</div>
+                </div>
+            </div>
+            <div>
+                <a href="../">← Volver al inicio</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

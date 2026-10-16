@@ -133,12 +133,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .lead {
-            color: var(--muted);
-            font-size: 1.05rem;
-            margin-bottom: 3rem;
-        }
-
         section {
             margin-bottom: 3rem;
             animation: fadeUp 0.6s ease both;
@@ -200,7 +194,6 @@
             margin-bottom: 1rem;
         }
 
-        /* Bloque de fórmula */
         .formula {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.95rem;
@@ -215,7 +208,6 @@
             white-space: nowrap;
         }
 
-        /* Bloque de constantes */
         .constants {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -262,7 +254,6 @@
             font-family: 'Space Grotesk', serif;
         }
 
-        /* Imagen (captura de pantalla) */
         .figure {
             margin: 1.5rem 0;
             border-radius: 16px;
@@ -293,7 +284,6 @@
             border-top: 1px solid var(--border-soft);
         }
 
-        /* Vídeos */
         .videos-grid {
             display: grid;
             gap: 1.75rem;
@@ -425,10 +415,7 @@
             Práctica 02 · Robótica Móvil
         </span>
 
-        <h1>Follow Line</h1>
-        <p class="lead">
-            Controlador PID para un Fórmula 1 autónomo capaz de seguir una línea roja en un circuito, adaptando su velocidad a las curvas.
-        </p>
+        <h1>Práctica 2: Follow Line</h1>
 
         <!-- OBJETIVOS -->
         <section>
@@ -465,8 +452,8 @@
             </p>
 
             <figure class="figure">
-                <img src="https://github.com/user-attachments/assets/33b4b4a8-0248-4d70-888a-7f0b246f09be" alt="Vista inicial de la cámara del coche">
-                <figcaption>Vista inicial de la cámara frontal del Fórmula 1 en el circuito.</figcaption>
+                <img src="https://github.com/user-attachments/assets/33b4b4a8-0248-4d70-888a-7f0b246f09be" alt="Captura de pantalla 2026-10-15 180649">
+                <figcaption>Vista inicial de la cámara del coche.</figcaption>
             </figure>
 
             <h3>2 · Máscara de color para aislar la línea roja</h3>
@@ -484,8 +471,8 @@
             </p>
 
             <figure class="figure">
-                <img src="https://github.com/user-attachments/assets/8094227a-1aa0-4195-aea1-0d69249eeda5" alt="Máscara binaria de la línea roja">
-                <figcaption>Máscara binaria: solo la línea roja permanece en blanco tras el filtrado en HSV.</figcaption>
+                <img src="https://github.com/user-attachments/assets/8094227a-1aa0-4195-aea1-0d69249eeda5" alt="Captura de pantalla 2026-10-15 184220">
+                <figcaption>Máscara binaria de la línea roja.</figcaption>
             </figure>
 
             <h3>3 · Detección del centro de la línea</h3>
@@ -502,39 +489,54 @@
                 Para encontrar el centro de la línea, he usado la función <code>np.where(region &gt; 0)</code> que nos
                 devuelve las filas y las columnas de nuestra región donde los píxeles son blancos, es decir, la línea roja.
                 Ahora que sabemos cuáles son y se guardan en nuestra variable <code>columns</code>, con
-                <code>np.mean(columns)</code> sacamos el punto medio.
+                <code>np.mean(columns)</code>, sacamos el punto medio.
             </p>
 
             <h3>4 · Controlador PID</h3>
             <p>
                 Ahora que nuestro coche ya sabe dónde está el punto medio de la línea ubicado en la imagen en todo momento,
-                debemos implementar el controlador PID. Calculamos el <strong>error</strong>, es decir, la cantidad de
-                píxeles y la dirección que diferencian el centro de nuestra imagen con el centro de la línea:
+                debemos implementar el controlador PID.
+            </p>
+            <p>
+                Calculamos el <strong>error</strong>, es decir, la cantidad de píxeles y la dirección que diferencian el
+                centro de nuestra imagen con el centro de la línea:
             </p>
 
             <div class="formula">error = (width // 2) − line_middle</div>
 
             <p>
-                Cuando tenemos el error aplicamos la fórmula para comenzar con la <strong>P</strong> de nuestro controlador:
-                <code>W = Kp · error</code>. Pero esto por sí mismo no es suficiente para evitar que el coche oscile y se
-                desvíe, además de que se nos pide explícitamente un PID. Por tanto, para añadir esa <strong>D</strong>
-                necesitamos calcular la derivada del error, que es la diferencia entre el error actual y el anterior.
+                La variable <code>width</code> es el ancho de la imagen, que hemos obtenido con <code>image.shape</code>.
+            </p>
+            <p>
+                Cuando tenemos el error aplicamos la fórmula para comenzar con la <strong>P</strong> de nuestro controlador,
+                por tanto la W sería <code>w = Kp * error</code>. Pero esto por sí mismo no es suficiente para evitar que el
+                coche oscile y se desvíe, además de que se nos pide explícitamente un PID. Por tanto, para añadir esa
+                <strong>D</strong> necesitamos calcular la derivada del error, que es la diferencia entre el error actual y
+                el anterior. Por eso añadimos al principio del tick que el error anterior sea el actual:
+                <code>previous_error = error</code>. Y tras calcular el error en esta nueva iteración, se calcula la
+                derivada:
             </p>
 
-            <div class="formula">previous_error = error<br>derivative = error − previous_error<br>W = Kp · error + Kd · derivative</div>
+            <div class="formula">previous_error = error<br>derivative = error − previous_error<br>w = Kp * error + Kd * derivative</div>
 
             <p>
                 Y con esto aplicamos la fórmula, que ya hace mucho más fluido el giro y, una vez ajustemos los valores de
                 las ganancias, harán que no oscile mucho y no se desvíe. Pero antes nos falta la <strong>I</strong> del PID.
             </p>
             <p>
-                En este caso yo he dejado la ganancia de la I (<code>Ki</code>) en <strong>0</strong>, ya que al ser una
-                simulación, el escenario es ideal y no hay pequeños errores. Pero está implementado de tal manera que se
-                acumula el error a lo largo del tiempo y se usa para corregir problemas que la P y la D no solucionan,
-                como que la cámara estuviera algo torcida y el robot fuera descentrado en la línea.
+                En este caso yo he dejado la ganancia de la I (<code>Ki</code>) en 0, ya que al ser una simulación, el
+                escenario es ideal y no hay pequeños errores. Pero está implementado de tal manera que se acumula el error
+                a lo largo del tiempo y se usa para corregir problemas que la P y la D no solucionan, como que la cámara
+                estuviera algo torcida y el robot fuera descentrado en la línea. La I va sumando el error en cada tick:
+                <code>suma_errores = suma_errores + error</code>. Aunque el error sea pequeño (5 píxeles), si es constante,
+                la suma va creciendo.
+            </p>
+            <p>
+                Y la corrección de la I es <code>Ki * suma_errores</code>. Como la suma crece, la corrección crece, hasta
+                que el error residual se elimina. Cumpliendo la fórmula del PID:
             </p>
 
-            <div class="formula">error_sum = error_sum + error<br>W = Kp · error + Kd · derivative + Ki · error_sum</div>
+            <div class="formula">error_sum = error_sum + error<br>w = Kp * error + Kd * derivative + Ki * error_sum</div>
 
             <h3>5 · Control de velocidad adaptativo</h3>
             <p>
@@ -542,10 +544,10 @@
                 de dónde esté el centro de la línea. El problema surge si la velocidad es lo suficientemente alta como para
                 que se desvíe en las curvas. Por tanto usamos un <strong>control de velocidad adaptativo</strong>: en vez de
                 ir siempre a <span class="math">V_max</span>, el coche modula su velocidad según lo desviado que esté de la
-                línea y lo rápido que esté cambiando esa desviación.
+                línea y lo rápido que esté cambiando esa desviación. La fórmula es:
             </p>
 
-            <div class="formula">V = V_max − K_v · |error| − K_dv · |derivative|</div>
+            <div class="formula">V = V_max − K_v * |error| − K_dv * |derivative|</div>
 
             <p>
                 Así, cuanto mayor sea el error y más tarde en centrarse, más lento va, para dar tiempo de reacción en las curvas.
@@ -553,9 +555,9 @@
 
             <h3>6 · Ganancias finales</h3>
             <p>
-                Una vez implementado todo esto, fui probando con velocidades máximas y diferentes ganancias para ver cuál se
-                ajustaba mejor. Ajusté los siguientes valores, que dan un equilibrio suficiente entre velocidad, seguir con
-                precisión la línea y no oscilar:
+                Una vez implementado todo esto, fui probando con velocidades máximas, y diferentes ganancias para ver cuál se
+                ajustaba mejor. Probando ajusté los siguientes valores, que me parece que dan un equilibrio suficiente entre
+                velocidad, seguir con precisión la línea y no oscilar:
             </p>
 
             <div class="constants">
@@ -579,8 +581,8 @@
 
             <h3>7 · Robustez al perder la línea</h3>
             <p style="margin-bottom: 0;">
-                Por último he implementado que se guarde el último error en cada iteración para que, si no se encuentran
-                píxeles blancos, el coche siga girando en la dirección donde perdió la línea, ya que a menos que el circuito
+                Por último he implementado que se guarde el último error en cada iteración para que si no se encuentran
+                píxeles blancos el coche siga girando en la dirección donde perdió la línea, ya que a menos que el circuito
                 estuviera mal hecho, lo más probable es que pierda la línea al no girar lo suficiente en una curva. Por tanto
                 sigue girando en la dirección de la curva buscando reencontrar la línea.
             </p>
@@ -589,43 +591,42 @@
         <!-- VÍDEOS -->
         <section>
             <h2>Vídeos de demostración</h2>
+            <p>Aquí están los vídeos de demostración:</p>
 
             <div class="videos-grid">
                 <div class="video-item">
-                    <span class="video-label">Circuito 1 · Vuelta completa</span>
+                    <span class="video-label">Vídeo del primer circuito completo</span>
                     <div class="video-wrap">
                         <video controls preload="metadata" playsinline>
                             <source src="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/Video.Project.5.1.mp4" type="video/mp4">
                             Tu navegador no soporta la etiqueta de vídeo.
-                            <a href="circuito_1.mp4">Descargar vídeo</a>.
+                            <a href="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/Video.Project.5.1.mp4">Descargar vídeo</a>.
                         </video>
                     </div>
-                    <p class="video-caption">Primer circuito completado de principio a fin.</p>
                 </div>
 
                 <div class="video-item">
-                    <span class="video-label">Circuito 2 · Vuelta completa</span>
+                    <span class="video-label">Vídeo del segundo circuito completo</span>
                     <div class="video-wrap">
                         <video controls preload="metadata" playsinline>
-                             <source src="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/Video.Project.6.1.mp4" type="video/mp4">
+                            <source src="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/Video.Project.6.1.mp4" type="video/mp4">
                             Tu navegador no soporta la etiqueta de vídeo.
-                            <a href="circuito_2.mp4">Descargar vídeo</a>.
+                            <a href="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/Video.Project.6.1.mp4">Descargar vídeo</a>.
                         </video>
                     </div>
-                    <p class="video-caption">Segundo circuito completado, con curvas más variadas.</p>
                 </div>
 
                 <div class="video-item">
-                    <span class="video-label">Circuito 3 · Prueba de robustez</span>
+                    <span class="video-label">Vídeo de demostración de robustez en el circuito 3</span>
                     <div class="video-wrap">
                         <video controls preload="metadata" playsinline>
                             <source src="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/Video.Project.7.mp4" type="video/mp4">
                             Tu navegador no soporta la etiqueta de vídeo.
-                            <a href="circuito_3.mp4">Descargar vídeo</a>.
+                            <a href="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/Video.Project.7.mp4">Descargar vídeo</a>.
                         </video>
                     </div>
                     <p class="video-caption">
-                        En este último se ve que, al haber curvas muy cerradas, el coche pierde la línea, pero reduce la
+                        En este último se ve que al haber curvas muy cerradas el coche pierde la línea, pero reduce la
                         velocidad y sigue girando en la misma dirección, por tanto la consigue encontrar y se reincorpora.
                     </p>
                 </div>
@@ -638,8 +639,8 @@
             <div class="highlight">
                 <p>
                     A pesar de no ser perfecto y oscilar a veces más de lo que gustaría, el diseño <strong>cumple con el
-                    objetivo y es robusto</strong>. He de añadir que al ir a velocidad 12 estamos sacrificando estabilidad a
-                    cambio de velocidad, ya que antes de las curvas entra muy velozmente, haciendo que reaccione peor.
+                    objetivo y es robusto</strong>. He de añadir que al ir a velocidad 12, estamos sacrificando estabilidad
+                    a cambio de velocidad, ya que antes de las curvas entra muy velozmente, haciendo que reaccione peor.
                 </p>
                 <p>
                     Si bajásemos la velocidad, a pesar de ser más lento, sería <strong>más estable</strong>.
@@ -658,7 +659,7 @@
                 <div class="avatar">MG</div>
                 <div>
                     <div style="color: var(--text); font-weight: 600;">Marcos García Vila</div>
-                    <div style="font-size: 0.8rem;">3º Ingeniería Robótica Software · URJC</div>
+                    <div style="font-size: 0.8rem;">3º Ingeniería Robótica Software</div>
                 </div>
             </div>
             <div>

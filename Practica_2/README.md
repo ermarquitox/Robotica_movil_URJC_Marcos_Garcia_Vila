@@ -9,10 +9,12 @@ La aplicación robótica se implementará como un bucle infinito. Cada iteració
 ## Desarrollo:
 
 Para comenzar la práctica primero hice una prueba de las funciones que se nos dan. Para ello simplemente puse dentro del bucle principal las funciones HAL.getImage() seguido de WebGUI.showImage() para ver qué se ve. Este fue el resultado  
-//captura
+
+<img width="2050" height="635" alt="Captura de pantalla 2026-10-15 180649" src="https://github.com/user-attachments/assets/33b4b4a8-0248-4d70-888a-7f0b246f09be" />
 
 Antes de hacer que el coche comenzase a moverse, había que crear una máscara que filtrase el color rojo de la línea para así poder seguirla. Para ello usar los colores BGR8 que nos da la función de imagen es más complicado, por tanto para filtrar el color rojo primero pasaremos los colores a HSV. Para ello necesitamos la biblioteca cv2. Con ella, usando la función cv2.inRange(hsv, lower, upper), podemos pasar la imagen a hsv, y al definir los valores upper y lower en el umbral que necesitamos para el rojo, se crea nuestra máscara, dejando en la imagen todo lo que no es rojo de color negro y la línea roja de color blanco.  
-//captura
+
+<img width="2041" height="605" alt="Captura de pantalla 2026-10-15 184220" src="https://github.com/user-attachments/assets/8094227a-1aa0-4195-aea1-0d69249eeda5" />
 
 Una vez conseguido esto, ahora necesitamos encontrar el centro de la línea para así poder seguirla y corregir los valores que le pasamos a los actuadores en función de el error que hay entre el centro de nuestra imagen y el centro de la línea. Por comodidad defino la región a partir de donde se ve la línea en pantalla, que es la mitad inferior region \= mapped\_image\[height//2:, :\]
 

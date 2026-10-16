@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica 2 · Follow Line · Robótica Móvil URJC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --bg-soft: #111827;
+            --card: #151b2e;
+            --accent: #00e0b8;
+            --accent-2: #7c5cff;
+            --text: #e6edf7;
+            --muted: #94a3b8;
+            --border: rgba(124, 92, 255, 0.18);
+            --border-soft: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 2rem 1.25rem 4rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(124, 92, 255, 0.15), transparent 45%),
+                radial-gradient(circle at 85% 90%, rgba(0, 224, 184, 0.12), transparent 45%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
+            -webkit-mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+
+        .back:hover {
+            color: var(--accent);
+            border-color: var(--border);
+            background: rgba(0, 224, 184, 0.05);
+            transform: translateX(-3px);
+        }
+
+        .back span { font-size: 1.1rem; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(0, 224, 184, 0.08);
+            border: 1px solid rgba(0, 224, 184, 0.25);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 5.5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 20%, var(--accent) 60%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .lead {
+            color: var(--muted);
+            font-size: 1.05rem;
+            margin-bottom: 3rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        section:nth-child(2) { animation-delay: 0.05s; }
+        section:nth-child(3) { animation-delay: 0.1s; }
+        section:nth-child(4) { animation-delay: 0.15s; }
+        section:nth-child(5) { animation-delay: 0.2s; }
+        section:nth-child(6) { animation-delay: 0.25s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            margin-bottom: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        h2::before {
+            content: "";
+            width: 4px;
+            height: 1.4rem;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 12px rgba(0, 224, 184, 0.5);
+        }
+
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        p strong { color: var(--text); font-weight: 600; }
+
+        .card {
+            background: linear-gradient(135deg, var(--card), var(--bg-soft));
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 1.75rem 1.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Bloque de fórmula */
+        .formula {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            background: rgba(124, 92, 255, 0.08);
+            border: 1px solid rgba(124, 92, 255, 0.2);
+            border-left: 3px solid var(--accent);
+            color: #c4b5fd;
+            margin: 1rem 0;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        /* Bloque de constantes */
+        .constants {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .constant {
+            padding: 0.9rem 1rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--card), var(--bg-soft));
+            border: 1px solid var(--border-soft);
+            text-align: center;
+        }
+
+        .constant .name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.35rem;
+        }
+
+        .constant .value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            padding: 0.15em 0.45em;
+            border-radius: 6px;
+            background: rgba(124, 92, 255, 0.12);
+            border: 1px solid rgba(124, 92, 255, 0.2);
+            color: #c4b5fd;
+        }
+
+        .math {
+            font-style: italic;
+            color: var(--accent);
+            font-family: 'Space Grotesk', serif;
+        }
+
+        /* Imagen (captura de pantalla) */
+        .figure {
+            margin: 1.5rem 0;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--card);
+            box-shadow: 0 20px 40px -20px rgba(0, 224, 184, 0.25);
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .figure:hover {
+            border-color: rgba(0, 224, 184, 0.4);
+            box-shadow: 0 24px 48px -20px rgba(0, 224, 184, 0.4);
+        }
+
+        .figure img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .figure figcaption {
+            padding: 0.75rem 1.1rem;
+            font-size: 0.83rem;
+            color: var(--muted);
+            font-style: italic;
+            background: rgba(0, 0, 0, 0.25);
+            border-top: 1px solid var(--border-soft);
+        }
+
+        /* Vídeos */
+        .videos-grid {
+            display: grid;
+            gap: 1.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .video-item { display: flex; flex-direction: column; }
+
+        .video-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.65rem;
+            padding-left: 0.15rem;
+        }
+
+        .video-label::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .video-wrap {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #000;
+            box-shadow: 0 20px 40px -20px rgba(0, 224, 184, 0.25);
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .video-wrap:hover {
+            border-color: rgba(0, 224, 184, 0.4);
+            box-shadow: 0 24px 48px -20px rgba(0, 224, 184, 0.4);
+        }
+
+        .video-wrap::before {
+            content: "";
+            display: block;
+            padding-top: 56.25%;
+        }
+
+        .video-wrap video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: #000;
+        }
+
+        .video-caption {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-top: 0.85rem;
+            padding-left: 0.25rem;
+        }
+
+        .highlight {
+            padding: 1.5rem 1.75rem;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(0, 224, 184, 0.06));
+            border-left: 3px solid var(--accent);
+        }
+
+        .highlight p:last-child { margin-bottom: 0; }
+
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-soft);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        footer .author { display: flex; align-items: center; gap: 0.6rem; }
+
+        footer .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-2), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0a0e1a;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        footer a:hover { border-bottom-color: var(--accent); }
+
+        @media (max-width: 560px) {
+            .card { padding: 1.4rem 1.25rem; }
+            .formula { font-size: 0.82rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back" href="../">
+            <span>←</span> Volver al inicio
+        </a>
+
+        <span class="badge">
+            <span class="dot"></span>
+            Práctica 02 · Robótica Móvil
+        </span>
+
+        <h1>Follow Line</h1>
+        <p class="lead">
+            Controlador PID para un Fórmula 1 autónomo capaz de seguir una línea roja en un circuito, adaptando su velocidad a las curvas.
+        </p>
+
+        <!-- OBJETIVOS -->
+        <section>
+            <h2>Objetivos de la práctica</h2>
+            <div class="card">
+                <p>
+                    En esta práctica se nos pide programar un coche de Fórmula 1, equipado con una cámara frontal, para que
+                    recorra un circuito de carreras que tiene una <strong>línea roja</strong> en el medio de la pista.
+                    Se programará uno o varios controladores <strong>PID</strong> para gobernar la velocidad lineal
+                    del coche (<span class="math">V</span>) y la velocidad angular (<span class="math">W</span>).
+                </p>
+                <p>
+                    El coche debe funcionar en varios circuitos, completarlos en el <strong>menor tiempo posible</strong> y
+                    sin alejarse de la línea roja. Cuantas menos oscilaciones tenga mejor, y conviene que sea robusto si en
+                    algún momento pierde la línea.
+                </p>
+                <p style="margin-bottom: 0;">
+                    La aplicación robótica se implementará como un bucle infinito. Cada iteración incluirá las instrucciones
+                    para materializar el procesamiento de la imagen y para la toma de decisiones sobre los dos actuadores
+                    <span class="math">V</span> y <span class="math">W</span>.
+                </p>
+            </div>
+        </section>
+
+        <!-- DESARROLLO -->
+        <section>
+            <h2>Desarrollo</h2>
+
+            <h3>1 · Primer contacto con el entorno</h3>
+            <p>
+                Para comenzar la práctica primero hice una prueba de las funciones que se nos dan. Para ello simplemente
+                puse dentro del bucle principal las funciones <code>HAL.getImage()</code> seguido de
+                <code>WebGUI.showImage()</code> para ver qué se ve. Este fue el resultado:
+            </p>
+
+            <figure class="figure">
+                <img src="https://github.com/user-attachments/assets/33b4b4a8-0248-4d70-888a-7f0b246f09be" alt="Vista inicial de la cámara del coche">
+                <figcaption>Vista inicial de la cámara frontal del Fórmula 1 en el circuito.</figcaption>
+            </figure>
+
+            <h3>2 · Máscara de color para aislar la línea roja</h3>
+            <p>
+                Antes de hacer que el coche comenzase a moverse, había que crear una <strong>máscara</strong> que filtrase
+                el color rojo de la línea para así poder seguirla. Para ello usar los colores BGR8 que nos da la función de
+                imagen es más complicado, por tanto para filtrar el color rojo primero pasaremos los colores a
+                <strong>HSV</strong>.
+            </p>
+            <p>
+                Para ello necesitamos la biblioteca <code>cv2</code>. Con ella, usando la función
+                <code>cv2.inRange(hsv, lower, upper)</code>, podemos pasar la imagen a HSV, y al definir los valores
+                <code>upper</code> y <code>lower</code> en el umbral que necesitamos para el rojo, se crea nuestra máscara,
+                dejando en la imagen todo lo que no es rojo de color negro y la línea roja de color blanco.
+            </p>
+
+            <figure class="figure">
+                <img src="https://github.com/user-attachments/assets/8094227a-1aa0-4195-aea1-0d69249eeda5" alt="Máscara binaria de la línea roja">
+                <figcaption>Máscara binaria: solo la línea roja permanece en blanco tras el filtrado en HSV.</figcaption>
+            </figure>
+
+            <h3>3 · Detección del centro de la línea</h3>
+            <p>
+                Una vez conseguido esto, ahora necesitamos encontrar el <strong>centro de la línea</strong> para así poder
+                seguirla y corregir los valores que le pasamos a los actuadores en función del error que hay entre el centro
+                de nuestra imagen y el centro de la línea. Por comodidad defino la región a partir de donde se ve la línea
+                en pantalla, que es la mitad inferior:
+            </p>
+
+            <div class="formula">region = mapped_image[height//2:, :]</div>
+
+            <p>
+                Para encontrar el centro de la línea, he usado la función <code>np.where(region &gt; 0)</code> que nos
+                devuelve las filas y las columnas de nuestra región donde los píxeles son blancos, es decir, la línea roja.
+                Ahora que sabemos cuáles son y se guardan en nuestra variable <code>columns</code>, con
+                <code>np.mean(columns)</code> sacamos el punto medio.
+            </p>
+
+            <h3>4 · Controlador PID</h3>
+            <p>
+                Ahora que nuestro coche ya sabe dónde está el punto medio de la línea ubicado en la imagen en todo momento,
+                debemos implementar el controlador PID. Calculamos el <strong>error</strong>, es decir, la cantidad de
+                píxeles y la dirección que diferencian el centro de nuestra imagen con el centro de la línea:
+            </p>
+
+            <div class="formula">error = (width // 2) − line_middle</div>
+
+            <p>
+                Cuando tenemos el error aplicamos la fórmula para comenzar con la <strong>P</strong> de nuestro controlador:
+                <code>W = Kp · error</code>. Pero esto por sí mismo no es suficiente para evitar que el coche oscile y se
+                desvíe, además de que se nos pide explícitamente un PID. Por tanto, para añadir esa <strong>D</strong>
+                necesitamos calcular la derivada del error, que es la diferencia entre el error actual y el anterior.
+            </p>
+
+            <div class="formula">previous_error = error<br>derivative = error − previous_error<br>W = Kp · error + Kd · derivative</div>
+
+            <p>
+                Y con esto aplicamos la fórmula, que ya hace mucho más fluido el giro y, una vez ajustemos los valores de
+                las ganancias, harán que no oscile mucho y no se desvíe. Pero antes nos falta la <strong>I</strong> del PID.
+            </p>
+            <p>
+                En este caso yo he dejado la ganancia de la I (<code>Ki</code>) en <strong>0</strong>, ya que al ser una
+                simulación, el escenario es ideal y no hay pequeños errores. Pero está implementado de tal manera que se
+                acumula el error a lo largo del tiempo y se usa para corregir problemas que la P y la D no solucionan,
+                como que la cámara estuviera algo torcida y el robot fuera descentrado en la línea.
+            </p>
+
+            <div class="formula">error_sum = error_sum + error<br>W = Kp · error + Kd · derivative + Ki · error_sum</div>
+
+            <h3>5 · Control de velocidad adaptativo</h3>
+            <p>
+                Con esto, el coche ya recorre el circuito siguiendo la línea con una velocidad constante y girando en función
+                de dónde esté el centro de la línea. El problema surge si la velocidad es lo suficientemente alta como para
+                que se desvíe en las curvas. Por tanto usamos un <strong>control de velocidad adaptativo</strong>: en vez de
+                ir siempre a <span class="math">V_max</span>, el coche modula su velocidad según lo desviado que esté de la
+                línea y lo rápido que esté cambiando esa desviación.
+            </p>
+
+            <div class="formula">V = V_max − K_v · |error| − K_dv · |derivative|</div>
+
+            <p>
+                Así, cuanto mayor sea el error y más tarde en centrarse, más lento va, para dar tiempo de reacción en las curvas.
+            </p>
+
+            <h3>6 · Ganancias finales</h3>
+            <p>
+                Una vez implementado todo esto, fui probando con velocidades máximas y diferentes ganancias para ver cuál se
+                ajustaba mejor. Ajusté los siguientes valores, que dan un equilibrio suficiente entre velocidad, seguir con
+                precisión la línea y no oscilar:
+            </p>
+
+            <div class="constants">
+                <div class="constant">
+                    <div class="name">Kp</div>
+                    <div class="value">0.0035</div>
+                </div>
+                <div class="constant">
+                    <div class="name">Kd</div>
+                    <div class="value">0.05</div>
+                </div>
+                <div class="constant">
+                    <div class="name">Ki</div>
+                    <div class="value">0</div>
+                </div>
+                <div class="constant">
+                    <div class="name">V_max</div>
+                    <div class="value">12</div>
+                </div>
+            </div>
+
+            <h3>7 · Robustez al perder la línea</h3>
+            <p style="margin-bottom: 0;">
+                Por último he implementado que se guarde el último error en cada iteración para que, si no se encuentran
+                píxeles blancos, el coche siga girando en la dirección donde perdió la línea, ya que a menos que el circuito
+                estuviera mal hecho, lo más probable es que pierda la línea al no girar lo suficiente en una curva. Por tanto
+                sigue girando en la dirección de la curva buscando reencontrar la línea.
+            </p>
+        </section>
+
+        <!-- VÍDEOS -->
+        <section>
+            <h2>Vídeos de demostración</h2>
+
+            <div class="videos-grid">
+                <div class="video-item">
+                    <span class="video-label">Circuito 1 · Vuelta completa</span>
+                    <div class="video-wrap">
+                        <video controls preload="metadata" playsinline>
+                            <source src="circuito_1.mp4" type="video/mp4">
+                            Tu navegador no soporta la etiqueta de vídeo.
+                            <a href="circuito_1.mp4">Descargar vídeo</a>.
+                        </video>
+                    </div>
+                    <p class="video-caption">Primer circuito completado de principio a fin.</p>
+                </div>
+
+                <div class="video-item">
+                    <span class="video-label">Circuito 2 · Vuelta completa</span>
+                    <div class="video-wrap">
+                        <video controls preload="metadata" playsinline>
+                            <source src="circuito_2.mp4" type="video/mp4">
+                            Tu navegador no soporta la etiqueta de vídeo.
+                            <a href="circuito_2.mp4">Descargar vídeo</a>.
+                        </video>
+                    </div>
+                    <p class="video-caption">Segundo circuito completado, con curvas más variadas.</p>
+                </div>
+
+                <div class="video-item">
+                    <span class="video-label">Circuito 3 · Prueba de robustez</span>
+                    <div class="video-wrap">
+                        <video controls preload="metadata" playsinline>
+                            <source src="circuito_3.mp4" type="video/mp4">
+                            Tu navegador no soporta la etiqueta de vídeo.
+                            <a href="circuito_3.mp4">Descargar vídeo</a>.
+                        </video>
+                    </div>
+                    <p class="video-caption">
+                        En este último se ve que, al haber curvas muy cerradas, el coche pierde la línea, pero reduce la
+                        velocidad y sigue girando en la misma dirección, por tanto la consigue encontrar y se reincorpora.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONCLUSIÓN -->
+        <section>
+            <h2>Conclusión</h2>
+            <div class="highlight">
+                <p>
+                    A pesar de no ser perfecto y oscilar a veces más de lo que gustaría, el diseño <strong>cumple con el
+                    objetivo y es robusto</strong>. He de añadir que al ir a velocidad 12 estamos sacrificando estabilidad a
+                    cambio de velocidad, ya que antes de las curvas entra muy velozmente, haciendo que reaccione peor.
+                </p>
+                <p>
+                    Si bajásemos la velocidad, a pesar de ser más lento, sería <strong>más estable</strong>.
+                </p>
+            </div>
+        </section>
+
+        <!-- ENTREGA -->
+        <section>
+            <h2>Entrega</h2>
+            <p>Adjunto el archivo Python en el aula virtual.</p>
+        </section>
+
+        <footer>
+            <div class="author">
+                <div class="avatar">MG</div>
+                <div>
+                    <div style="color: var(--text); font-weight: 600;">Marcos García Vila</div>
+                    <div style="font-size: 0.8rem;">3º Ingeniería Robótica Software · URJC</div>
+                </div>
+            </div>
+            <div>
+                <a href="../">← Volver al inicio</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

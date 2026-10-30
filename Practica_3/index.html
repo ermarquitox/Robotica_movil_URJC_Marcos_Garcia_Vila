@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica 3 · Navegación local VFF · Robótica Móvil URJC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --bg-soft: #111827;
+            --card: #151b2e;
+            --accent: #00e0b8;
+            --accent-2: #7c5cff;
+            --text: #e6edf7;
+            --muted: #94a3b8;
+            --border: rgba(124, 92, 255, 0.18);
+            --border-soft: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 2rem 1.25rem 4rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(124, 92, 255, 0.15), transparent 45%),
+                radial-gradient(circle at 85% 90%, rgba(0, 224, 184, 0.12), transparent 45%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
+            -webkit-mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+
+        .back:hover {
+            color: var(--accent);
+            border-color: var(--border);
+            background: rgba(0, 224, 184, 0.05);
+            transform: translateX(-3px);
+        }
+
+        .back span { font-size: 1.1rem; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(0, 224, 184, 0.08);
+            border: 1px solid rgba(0, 224, 184, 0.25);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 5.5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 20%, var(--accent) 60%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        section {
+            margin-bottom: 3rem;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        section:nth-child(2) { animation-delay: 0.05s; }
+        section:nth-child(3) { animation-delay: 0.1s; }
+        section:nth-child(4) { animation-delay: 0.15s; }
+        section:nth-child(5) { animation-delay: 0.2s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            margin-bottom: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        h2::before {
+            content: "";
+            width: 4px;
+            height: 1.4rem;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 12px rgba(0, 224, 184, 0.5);
+        }
+
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        p strong { color: var(--text); font-weight: 600; }
+
+        .card {
+            background: linear-gradient(135deg, var(--card), var(--bg-soft));
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 1.75rem 1.9rem;
+            margin-bottom: 1rem;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            padding: 0.15em 0.45em;
+            border-radius: 6px;
+            background: rgba(124, 92, 255, 0.12);
+            border: 1px solid rgba(124, 92, 255, 0.2);
+            color: #c4b5fd;
+        }
+
+        .math {
+            font-style: italic;
+            color: var(--accent);
+            font-family: 'Space Grotesk', serif;
+        }
+
+        /* Vídeos */
+        .videos-grid {
+            display: grid;
+            gap: 1.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .video-item { display: flex; flex-direction: column; }
+
+        .video-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.65rem;
+            padding-left: 0.15rem;
+        }
+
+        .video-label::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .video-wrap {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #000;
+            box-shadow: 0 20px 40px -20px rgba(0, 224, 184, 0.25);
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .video-wrap:hover {
+            border-color: rgba(0, 224, 184, 0.4);
+            box-shadow: 0 24px 48px -20px rgba(0, 224, 184, 0.4);
+        }
+
+        .video-wrap::before {
+            content: "";
+            display: block;
+            padding-top: 56.25%;
+        }
+
+        .video-wrap video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: #000;
+        }
+
+        .video-caption {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-top: 0.85rem;
+            padding-left: 0.25rem;
+        }
+
+        .highlight {
+            padding: 1.5rem 1.75rem;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(0, 224, 184, 0.06));
+            border-left: 3px solid var(--accent);
+        }
+
+        .highlight p:last-child { margin-bottom: 0; }
+
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-soft);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        footer .author { display: flex; align-items: center; gap: 0.6rem; }
+
+        footer .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-2), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0a0e1a;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        footer a:hover { border-bottom-color: var(--accent); }
+
+        @media (max-width: 560px) {
+            .card { padding: 1.4rem 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back" href="../">
+            <span>←</span> Volver al inicio
+        </a>
+
+        <span class="badge">
+            <span class="dot"></span>
+            Práctica 03 · Robótica Móvil
+        </span>
+
+        <h1>Práctica 3: Navegación local esquivando obstáculos con algoritmo VFF</h1>
+
+        <!-- OBJETIVOS -->
+        <section>
+            <h2>Objetivos de la práctica</h2>
+            <div class="card">
+                <p>
+                    En esta práctica se nos pide programar un coche de Fórmula 1, equipado con un sensor láser y un sensor GPS,
+                    para que recorra un circuito de carreras con valla en los laterales y con otros coches como obstáculos a lo
+                    largo del recorrido. Se programará el algoritmo de navegación local <strong>VFF</strong> con fuerzas
+                    virtuales para gobernar la velocidad lineal del coche (<span class="math">V</span>) y la velocidad angular
+                    (<span class="math">W</span>) en cada iteración.
+                </p>
+                <p>
+                    El coche debe completar el circuito en el <strong>menor tiempo posible</strong> y siempre manteniendo la
+                    seguridad de que no choca con ningún obstáculo. El sistema de navegación global ha planificado una secuencia
+                    de subobjetivos de modo que, si se van alcanzando consecutivamente, garantiza que se completa la vuelta al
+                    circuito. Se considerará un subobjetivo alcanzado cuando la posición del coche está razonablemente cerca
+                    de la posición del subobjetivo. En ese caso se pasará a navegar localmente hacia el siguiente subobjetivo.
+                </p>
+                <p style="margin-bottom: 0;">
+                    La aplicación robótica se implementará como un bucle infinito. Cada iteración incluirá las instrucciones
+                    para materializar el procesamiento del sensor láser, las fuerzas repulsivas, la fuerza atractiva, su
+                    combinación y su traducción a decisiones sobre los dos actuadores <span class="math">V</span> y
+                    <span class="math">W</span>.
+                </p>
+            </div>
+        </section>
+
+        <!-- DESARROLLO -->
+        <section>
+            <h2>Desarrollo</h2>
+
+            <h3>1 · Primer contacto con el entorno</h3>
+            <p>
+                Para comenzar, probé cómo se visualizaba el sensor láser y los vectores con las funciones
+                <code>HAL.getLaserData()</code> y <code>WebGUI.showForces(vec1, vec2, vec3)</code>.
+            </p>
+
+            <h3>2 · Vector de atracción</h3>
+            <p>
+                Una vez hecho eso, antes de hacer que el coche se moviera, me encargué de sacar los vectores a partir de los
+                datos, para luego aplicarlos al movimiento. Primero obtenemos el vector de atracción, asignando el primer
+                objetivo fuera del bucle con <code>current_target = WebGUI.getNextTarget()</code>, y una vez en el bucle
+                obtenemos la posición actual del coche con <code>car_x = HAL.getPose3d().x</code>,
+                <code>car_y = HAL.getPose3d().y</code>, y la orientación con <code>car_yaw = HAL.getPose3d().yaw</code>.
+            </p>
+            <p>
+                Podemos obtener la distancia al objetivo viendo la diferencia entre las coordenadas del objetivo y del coche,
+                pero esa distancia es global, y nos da un vector que no tiene en cuenta la orientación del coche, por tanto
+                necesitamos aplicar la <strong>rotación con la orientación del coche</strong>, para que en vez de tomar el eje
+                de coordenadas global del mapa, utilice el centro y la orientación del coche.
+            </p>
+            <p>
+                Una vez hecho esto, con pitágoras sacamos el valor de la distancia al objetivo y con una condición
+                <code>if</code>, si el coche se acerca lo suficiente (<strong>0.5</strong>) se registra el objetivo como
+                visitado y se pasa al siguiente.
+            </p>
+
+            <h3>3 · Vector de repulsión</h3>
+            <p>
+                Ahora que tenemos el vector de atracción necesitamos el de <strong>repulsión</strong>. Para ello con un bucle
+                <code>for</code> recorremos los 180 valores de <code>laser_data</code> y a partir de la distancia y el ángulo
+                construimos 180 vectores con sus componentes <span class="math">x</span> e <span class="math">y</span>, y
+                hacemos un sumatorio. Lo hacemos en negativo para que así el vector no vaya del coche al obstáculo, sino del
+                obstáculo al coche, ya que es de repulsión. Después dividimos entre 180 los sumatorios de
+                <span class="math">x</span> e <span class="math">y</span>, para que sean magnitudes equiparables a la
+                atracción, ya que son las repulsiones de 180 lecturas.
+            </p>
+
+            <h3>4 · Vector dirección y control de los actuadores</h3>
+            <p>
+                Por último hallamos el vector dirección sumando la atracción y la repulsión. Lo convertimos en movimiento
+                pasando el vector dirección <span class="math">y</span>, multiplicado por una ganancia
+                <code>K_W = 3</code> como velocidad angular, y regulamos el movimiento lineal multiplicando una velocidad
+                máxima por el <span class="math">vector_dirección_x</span>. Como están normalizados, sus valores están entre
+                <span class="math">−1</span> y <span class="math">1</span>.
+            </p>
+
+            <h3>5 · Problema de la repulsión frontal</h3>
+            <p>
+                Esto producía un problema. La suma de todos los componentes <span class="math">x</span> de los 180 vectores
+                siempre resulta en una repulsión en dirección contraria al movimiento, ya que todos los obstáculos detectados
+                se encuentran por delante del coche. En la teoría de la práctica solucionan esto ignorando el componente
+                <span class="math">x</span> del vector dirección por completo y solo utilizando el componente
+                <span class="math">y</span> para girar. Esto funciona, pero no da posibilidad de regular la velocidad lineal
+                basándonos en los objetos que hay hacia delante, por tanto, a menos que se vaya muy despacio, el coche no
+                tiene tiempo para reaccionar ante los objetos que tiene enfrente.
+            </p>
+            <p>
+                Para solucionarlo, apliqué una condición dentro del bucle <code>for</code> que obtiene los vectores: solo suma
+                los componentes <span class="math">x</span> de los vectores que se encuentran en el rango
+                <strong>(75–105)</strong>, es decir, los que están en la parte delantera, no en los laterales. Por tanto, si
+                se detecta un obstáculo delante a partir de cierta distancia, se suma la repulsión hacia atrás de ese objeto,
+                para poder regular la velocidad lineal. Para que la magnitud de este componente esté a la par con el de
+                <span class="math">y</span>, tengo una variable <strong>contador</strong> para los componentes
+                <span class="math">x</span> que sumemos; así, luego dividimos el sumatorio entre el contador.
+            </p>
+            <p>
+                Y para asegurar que el coche no pare y nunca vaya hacia atrás, si la multiplicación de la velocidad máxima por
+                el vector dirección en <span class="math">x</span> es menor que 1, la velocidad lineal se mantiene en 1.
+            </p>
+            <p style="margin-bottom: 0;">
+                Esto permite que el coche reduzca su velocidad lineal al detectar obstáculos próximos en su trayectoria y que,
+                mediante la componente lateral de la repulsión, modifique su orientación para intentar esquivarlos. He usado
+                ganancias para la repulsión de <span class="math">x</span> y de <span class="math">y</span>, las cuales he
+                ido probando hasta obtener valores que funcionaban correctamente.
+            </p>
+        </section>
+
+        <!-- VÍDEO -->
+        <section>
+            <h2>Vídeo de demostración</h2>
+
+            <div class="videos-grid">
+                <div class="video-item">
+                    <span class="video-label">Recorrido completo del circuito</span>
+                    <div class="video-wrap">
+                        <video controls preload="metadata" playsinline>
+                            <!--
+                                👇 SUSTITUYE ESTA URL por la del release de GitHub cuando subas el vídeo.
+                                Formato: https://github.com/USUARIO/REPO/releases/download/TAG/NOMBRE_VIDEO.mp4
+                            -->
+                            <source src="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/NOMBRE_DEL_VIDEO.mp4" type="video/mp4">
+                            Tu navegador no soporta la etiqueta de vídeo.
+                            <a href="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/NOMBRE_DEL_VIDEO.mp4">Descargar vídeo</a>.
+                        </video>
+                    </div>
+                    <p class="video-caption">
+                        Recorre el circuito en aproximadamente 2 minutos y medio.
+                    </p>
+                </div>
+            </div>
+
+            <p style="margin-top: 1.5rem;">
+                A pesar de que la variable se llame así, la velocidad máxima no es de 6, sino de 6×1.5, ya que el vector de
+                atracción está multiplicado por esa ganancia, y el máximo valor de la velocidad es 6 multiplicado por el
+                valor de <span class="math">x</span> del vector dirección, que al no tener obstáculos delante, es igual al
+                vector atracción. El nombre de la variable lo puse antes de poner la ganancia, por tanto sí que era la
+                velocidad máxima en ese momento, ya que el valor máximo del vector era 1. Solo es un apunte, ya que a pesar
+                de no haberlo cambiado en el código, un nombre más correcto sería <em>factor de velocidad</em>, por ejemplo.
+            </p>
+        </section>
+
+        <!-- CONCLUSIÓN -->
+        <section>
+            <h2>Conclusión</h2>
+            <div class="highlight">
+                <p>
+                    Si bien no es perfecto, y al evitar que el coche frene o retroceda, no podemos asegurar que con obstáculos
+                    más complicados no se pudiera quedar atrapado, el algoritmo <strong>cumple con el objetivo</strong> y
+                    demuestra las debilidades del diseño de VFF, siendo la anulación de fuerzas y la repulsión en sentido
+                    contrario.
+                </p>
+                <p>
+                    Me ha servido para entender cómo lidiar con ello y cómo desarrollar una <strong>navegación local a partir
+                    de una navegación global</strong> dada, lo cual es interesante porque podríamos desarrollar otro tipo de
+                    navegación local, manteniendo la global sin tocar.
+                </p>
+            </div>
+        </section>
+
+        <!-- ENTREGA -->
+        <section>
+            <h2>Entrega</h2>
+            <p>Adjunto el archivo Python en el aula virtual.</p>
+        </section>
+
+        <footer>
+            <div class="author">
+                <div class="avatar">MG</div>
+                <div>
+                    <div style="color: var(--text); font-weight: 600;">Marcos García Vila</div>
+                    <div style="font-size: 0.8rem;">3º Ingeniería Robótica Software</div>
+                </div>
+            </div>
+            <div>
+                <a href="../">← Volver al inicio</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,1 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica 4 · Navegación global GPP · Robótica Móvil URJC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --bg-soft: #111827;
+            --card: #151b2e;
+            --accent: #00e0b8;
+            --accent-2: #7c5cff;
+            --text: #e6edf7;
+            --muted: #94a3b8;
+            --border: rgba(124, 92, 255, 0.18);
+            --border-soft: rgba(255, 255, 255, 0.08);
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 2rem 1.25rem 4rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(124, 92, 255, 0.15), transparent 45%),
+                radial-gradient(circle at 85% 90%, rgba(0, 224, 184, 0.12), transparent 45%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
+            -webkit-mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+
+        .back:hover {
+            color: var(--accent);
+            border-color: var(--border);
+            background: rgba(0, 224, 184, 0.05);
+            transform: translateX(-3px);
+        }
+
+        .back span { font-size: 1.1rem; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(0, 224, 184, 0.08);
+            border: 1px solid rgba(0, 224, 184, 0.25);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 5.5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 20%, var(--accent) 60%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        section {
+            margin-bottom: 3rem;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        section:nth-child(2) { animation-delay: 0.05s; }
+        section:nth-child(3) { animation-delay: 0.1s; }
+        section:nth-child(4) { animation-delay: 0.15s; }
+        section:nth-child(5) { animation-delay: 0.2s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            margin-bottom: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        h2::before {
+            content: "";
+            width: 4px;
+            height: 1.4rem;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 12px rgba(0, 224, 184, 0.5);
+        }
+
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        p strong { color: var(--text); font-weight: 600; }
+
+        .card {
+            background: linear-gradient(135deg, var(--card), var(--bg-soft));
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 1.75rem 1.9rem;
+            margin-bottom: 1rem;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            padding: 0.15em 0.45em;
+            border-radius: 6px;
+            background: rgba(124, 92, 255, 0.12);
+            border: 1px solid rgba(124, 92, 255, 0.2);
+            color: #c4b5fd;
+        }
+
+        .math {
+            font-style: italic;
+            color: var(--accent);
+            font-family: 'Space Grotesk', serif;
+        }
+
+        /* Vídeos */
+        .videos-grid {
+            display: grid;
+            gap: 1.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .video-item { display: flex; flex-direction: column; }
+
+        .video-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.65rem;
+            padding-left: 0.15rem;
+        }
+
+        .video-label::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .video-wrap {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #000;
+            box-shadow: 0 20px 40px -20px rgba(0, 224, 184, 0.25);
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .video-wrap:hover {
+            border-color: rgba(0, 224, 184, 0.4);
+            box-shadow: 0 24px 48px -20px rgba(0, 224, 184, 0.4);
+        }
+
+        .video-wrap::before {
+            content: "";
+            display: block;
+            padding-top: 56.25%;
+        }
+
+        .video-wrap video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: #000;
+        }
+
+        .video-caption {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-top: 0.85rem;
+            padding-left: 0.25rem;
+        }
+
+        .highlight {
+            padding: 1.5rem 1.75rem;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(0, 224, 184, 0.06));
+            border-left: 3px solid var(--accent);
+        }
+
+        .highlight p:last-child { margin-bottom: 0; }
+
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-soft);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        footer .author { display: flex; align-items: center; gap: 0.6rem; }
+
+        footer .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-2), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0a0e1a;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        footer a:hover { border-bottom-color: var(--accent); }
+
+        @media (max-width: 560px) {
+            .card { padding: 1.4rem 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back" href="../">
+            <span>←</span> Volver al inicio
+        </a>
+
+        <span class="badge">
+            <span class="dot"></span>
+            Práctica 04 · Robótica Móvil
+        </span>
+
+        <h1>Práctica 4: Navegación global con algoritmo GPP, plan como recurso</h1>
+
+        <!-- OBJETIVOS -->
+        <section>
+            <h2>Objetivos de la práctica</h2>
+            <div class="card">
+                <p>
+                    En esta práctica se nos pide programar un coche autónomo, equipado con un sensor GPS y un mapa de la
+                    ciudad, para que ejerza de <strong>taxi autónomo</strong> siendo capaz de planificar su navegación
+                    desde el lugar en el que se encuentra hasta otro punto de la ciudad como destino, utilizando el
+                    algoritmo de <strong>Gradient Path Planning</strong>.
+                </p>
+                <p>
+                    Este algoritmo es un ejemplo de <em>plan como recurso</em>, proporcionando un campo escalar que el
+                    robot puede emplear en cualquier momento para pedir consejo de hacia dónde moverse para navegar
+                    hacia el destino. El campo será la suma de dos componentes: el <strong>subcampo de propagación a
+                    destino</strong> y el <strong>subcampo de penalización por cercanía a obstáculos</strong>.
+                </p>
+                <p style="margin-bottom: 0;">
+                    Además de la planificación utilizando el mapa, la aplicación robótica deberá pilotar el coche
+                    siguiendo el gradiente de ese campo, gobernando reactivamente la velocidad lineal del coche
+                    (<span class="math">V</span>) y la velocidad angular (<span class="math">W</span>) en cada
+                    iteración. El pilotaje se implementará como un bucle reactivo. Idealmente, una vez alcanzado un
+                    destino remoto, el coche autónomo esperará un nuevo destino que marque el usuario humano picando
+                    en otro punto del mapa de la ciudad.
+                </p>
+            </div>
+        </section>
+
+        <!-- DESARROLLO -->
+        <section>
+            <h2>Desarrollo</h2>
+
+            <h3>1 · Primeros pasos y acceso a los datos</h3>
+            <p>
+                Para comenzar, lo primero que hice fue asignar la posición del target y del coche a una variable. Esto
+                me dio un poco de problemas porque en la documentación de Unibotics parece que es una dupla con valores
+                <span class="math">x</span> e <span class="math">y</span>, pero en el coche también incluye la
+                orientación <span class="math">yaw</span> y no se accede a los valores de la misma manera que con una
+                dupla. Una vez conseguí acceder a los valores de la forma correcta, dejó de dar error.
+            </p>
+
+            <h3>2 · Campo de propagación</h3>
+            <p>
+                Necesitamos 3 cosas generales para que funcione el programa. Primero el <strong>campo de
+                propagación</strong>, que generamos con su propia función dentro del bucle principal, para que si
+                cambia el target se genere un campo nuevo. Para ello puse una condición en la que si el campo es
+                <code>None</code> o el target ha cambiado respecto de una variable <code>last_target</code>, entonces
+                se genera el campo nuevo. Lo segundo es el <strong>campo de penalización</strong>, que solo se genera
+                una vez al lanzar el programa, ya que sus valores son fijos a menos que se cambiase el mapa (cosa que
+                no se hace). Por último necesitamos el <strong>descenso de gradiente</strong>, que recorra de mayor a
+                menor el campo generado haciendo que el coche lo siga.
+            </p>
+            <p>
+                Para ello hice 3 funciones distintas que usan lógicas muy similares. Declaramos una variable
+                <code>neighbours</code>, que contiene 8 duplas que representan los cambios que resultan en las 8
+                diferentes casillas que pueden rodear a una casilla <span class="math">x</span>. Por ejemplo, la
+                casilla de la derecha es <code>x + (1, 0)</code>.
+            </p>
+            <p>
+                En la primera función, que construye el campo de propagación, declaramos un array de numpy de
+                <strong>400×400</strong> iniciado todo a <code>np.inf</code> donde guardaremos todos los valores
+                atribuidos a cada casilla del mapa que visitemos al construir el campo. Básicamente hacemos un bucle
+                <code>while</code>, que termina si la casilla explorada es la casilla donde está el coche, donde
+                empezando por el target, vamos revisando con un <code>for</code> cada una de las 8 casillas que la
+                rodean.
+            </p>
+            <p>
+                Si es un obstáculo, es decir, si su valor en el mapa es 0, la obviamos. Si su valor en nuestro campo no
+                es <code>np.inf</code>, significa que la hemos visitado, ya que le atribuiremos un valor si lo hacemos.
+                Por tanto esa casilla la ignoramos también. Y claramente si está fuera del mapa la ignoramos. Una vez
+                hecho eso, calculamos su valor: si es en diagonal sumamos a <code>current_value</code> raíz de 2; si
+                es un movimiento recto sumamos 1. Aún no aplicamos la penalización, porque no tenemos ese campo hecho.
+                Entonces atribuimos el valor calculado al índice <code>[fila, columna]</code> del array del campo.
+            </p>
+            <p>
+                Y para ir explorando en todas direcciones metemos las celdas vecinas válidas en una
+                <code>heapq</code>, es decir, una lista de prioridad. La prioridad que ponemos es la del valor de la
+                casilla, para que así el campo vaya expandiéndose a la misma velocidad en todas las direcciones. Saca
+                una casilla vecina, explora sus vecinas y las mete en la cola.
+            </p>
+
+            <h3>3 · Visualización del campo</h3>
+            <p>
+                Con esto ya teníamos el campo sin penalización, pero la idea ahora era dibujarlo. Esto me dio un poco
+                de problemas porque al principio traté de que se actualizase el campo por pantalla en cada iteración
+                del <code>while</code>, pero claro, esto era lentísimo. Antes de aplicarle color proporcionado al
+                valor de cada casilla, traté de probar con un campo de un gris uniforme. Por tanto hice un doble
+                <code>for</code> de 400, para que se recorriesen todos los valores de nuestro
+                <code>propagation_field</code>, y si no eran <code>np.inf</code>, es decir, si se habían visitado, se
+                guardaba en un array de las mismas dimensiones en ese índice el valor 128.
+            </p>
+            <p>
+                El problema venía al hacer esto miles de veces en el <code>while</code>. Por tanto para una animación
+                fluida y rápida al generarse, puse un <strong>contador</strong> que llega hasta 100 y se resetea, y
+                una condición para mostrar el campo. Ahora sí salía bien. Y para aplicar que la claridad fuera
+                proporcional al valor de la casilla, utilicé <code>finite = np.isfinite(propagation_field)</code>, que
+                te devuelve un array que se puede usar como máscara de índices, es decir, que si usamos
+                <code>propagation_field[finite]</code> podemos acceder y modificar todos los valores del array que son
+                finitos. Con ello y la fórmula matemática que está en código, que busqué en internet, para atribuir un
+                valor proporcional entre 0 y 255, se crea el color proporcional, partiendo de 0 y tomando como máximo
+                el valor más alto del campo en ese momento. Así, a medida que el campo va creciendo, los colores van
+                cambiando, hasta que termina y quedan las zonas con menor coste como oscuras y las zonas con mayor
+                coste claras.
+            </p>
+
+            <h3>4 · Campo de penalización</h3>
+            <p>
+                Para continuar apliqué la misma lógica del <code>heapq</code>, el <code>while</code> y la exploración
+                de vecinos en otra función para crear el campo de penalización, pero en vez de empezar desde un único
+                punto, empieza desde <strong>todos los obstáculos a la vez</strong>. Con un doble <code>for</code>
+                meto en el <code>heapq</code> cada casilla con valor 0 en el mapa, con distancia 0.
+            </p>
+            <p>
+                Cada vecino libre que se alcanza recibe una penalización que depende de su distancia al obstáculo más
+                cercano: la primera capa recibe la máxima (<code>max_penalty</code>) y baja linealmente con cada
+                casilla que se aleja, hasta superar el radio (<code>penalty_radious = 4</code>). Fuera de ese halo la
+                penalización es 0.
+            </p>
+
+            <h3>5 · Combinación de los campos</h3>
+            <p>
+                Con este campo calculado, traté de hacer que el valor de cada casilla al calcular el campo de
+                propagación fuera el valor de la casilla anterior, sumado de 1 si es recto o raíz de 2 si es diagonal,
+                y el valor de esa casilla en el campo de penalización. El problema era que no me gustaba cómo se
+                dibujaba el campo, ya que al tener menos coste las casillas del centro de los pasillos, los caminos se
+                expandían en el dibujo de forma puntiaguda en vez de recta.
+            </p>
+            <p>
+                Como no me gustaba, pensé actualizar el valor de las casillas del campo de propagación con su
+                penalización una vez hecho, y actualizar el mapa para que se viera el color. Pero más adelante me dio
+                problemas, ya que no es correcto: si el campo se expande y se crea un gradiente, pero luego se le
+                añaden penalizaciones, el campo se ha expandido en base a unos valores, y luego el coche sigue el
+                gradiente en base a otros, haciendo que se desviara del camino correcto y fuera en otra dirección. Por
+                tanto lo dejé como estaba inicialmente, aunque no me gustara mucho estéticamente.
+            </p>
+            <p>
+                Puse <strong>15 de penalización máxima</strong>, ya que si era más alta, el campo de propagación
+                buscaba caminos demasiado largos con tal de evitar casillas con penalización.
+            </p>
+
+            <h3>6 · Descenso de gradiente y control del coche</h3>
+            <p>
+                La tercera función, <code>next_cell</code>, hace el descenso. Recibe la casilla del coche, revisa sus 8
+                vecinos, ignora los que valen <code>np.inf</code> y devuelve el de menor valor, pero solo si es menor
+                que el de la casilla actual. Si no hay ninguno devuelve <code>None</code> y el coche se detiene. Un
+                detalle importante es el orden de los índices: <code>worldToGrid()</code> devuelve
+                (columna, fila), pero los arrays de numpy se indexan <code>[fila, columna]</code>, y por eso en el
+                código aparece <code>car_cell[1]</code> como fila y se da la vuelta a los índices al convertir con
+                <code>gridToWorld()</code>.
+            </p>
+            <p>
+                Para mover el coche, al principio apuntaba a la casilla vecina, pero el rumbo cambiaba a saltos,
+                porque solo hay 8 direcciones posibles y el coche casi nunca está en el centro de su casilla, y en las
+                curvas largas oscilaba sin parar. Lo solucioné <strong>encadenando <code>next_cell</code> cinco
+                veces</strong>, partiendo cada vez de la casilla anterior, y apuntando a la última. Convierto esa
+                casilla a coordenadas del mundo. A partir de eso calculo el error, usando las mismas fórmulas que
+                utilicé en la práctica anterior, y la velocidad angular es <code>K_W * error</code> con
+                <code>K_W = 5</code>. La velocidad lineal es 15 y baja a 2 cuando la angular supera 2, es decir, en
+                curvas cerradas.
+            </p>
+            <p style="margin-bottom: 0;">
+                Con la condición de llegada también tuve un fallo: al principio no usaba <strong>valor absoluto</strong>,
+                así que se cumplía siempre que el coche estuviera a la izquierda y debajo del destino, y se detenía en
+                mitad de las curvas.
+            </p>
+        </section>
+
+        <!-- VÍDEOS -->
+        <section>
+            <h2>Vídeos de demostración</h2>
+
+            <div class="videos-grid">
+                <div class="video-item">
+                    <span class="video-label">Navegación global con GPP</span>
+                    <div class="video-wrap">
+                        <video controls preload="metadata" playsinline>
+                            <!--
+                                👇 SUSTITUYE ESTA URL por la del release de GitHub cuando subas el vídeo.
+                                Formato: https://github.com/USUARIO/REPO/releases/download/TAG/NOMBRE_VIDEO.mp4
+                            -->
+                            <source src="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/NOMBRE_DEL_VIDEO.mp4" type="video/mp4">
+                            Tu navegador no soporta la etiqueta de vídeo.
+                            <a href="https://github.com/ermarquitox/Robotica_movil_URJC_Marcos_Garcia_Vila/releases/download/Videos/NOMBRE_DEL_VIDEO.mp4">Descargar vídeo</a>.
+                        </video>
+                    </div>
+                    <p class="video-caption">
+                        El coche planifica y sigue el gradiente del campo generado desde su posición hasta el destino
+                        marcado por el usuario.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONCLUSIÓN -->
+        <section>
+            <h2>Conclusión</h2>
+            <div class="highlight">
+                <p>
+                    A pesar de que se podrían refinar algunas cosas, creo que he cumplido con el objetivo y he
+                    entendido cómo utilizar el <strong>descenso de gradiente para la navegación</strong>. El algoritmo
+                    se podría utilizar con cualquier mapa binario de las mismas proporciones y, aunque el coche
+                    empezase en otra posición, funciona.
+                </p>
+                <p>
+                    Para esta aplicación no es necesario, pero creo que si se tratase de una aspiradora, por ejemplo,
+                    sería mejor que generase el mapa entero, no sólo hasta la posición del robot, ya que si alguien lo
+                    moviera a otra zona más alejada, el algoritmo seguiría encontrando el camino sin tener que generar
+                    el campo de nuevo.
+                </p>
+                <p style="margin-bottom: 0;">
+                    Además, he utilizado la condición de cercanía al objetivo porque el movimiento del coche hace que le
+                    sea difícil detectar si justo está sobre la casilla objetivo, pero veo que podría haber hecho que a
+                    partir de cierto rango, cuanto más cerca, más despacio fuera, para evitar este problema.
+                </p>
+            </div>
+        </section>
+
+        <!-- ENTREGA -->
+        <section>
+            <h2>Entrega</h2>
+            <p>Adjunto el archivo Python en el aula virtual.</p>
+        </section>
+
+        <footer>
+            <div class="author">
+                <div class="avatar">MG</div>
+                <div>
+                    <div style="color: var(--text); font-weight: 600;">Marcos García Vila</div>
+                    <div style="font-size: 0.8rem;">3º Ingeniería Robótica Software</div>
+                </div>
+            </div>
+            <div>
+                <a href="../">← Volver al inicio</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
